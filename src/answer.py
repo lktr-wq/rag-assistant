@@ -1,8 +1,11 @@
+import os
 import json
 import urllib.request
 from src.retrieve import retrieve
 
-LLM_URL = "http://localhost:9876/v1/chat/completions"
+LLM_URL = os.environ.get("LLM_API_BASE", "https://api.xiaomimimo.com/v1/chat/completions")
+LLM_API_KEY = os.environ.get("LLM_API_KEY", "sk-cacw10m7wpsyh2ru0vaqpoxoabrwer5teml88befbk7cmfmc")
+LLM_MODEL = os.environ.get("LLM_MODEL", "mimo-v2.5-pro")
 
 
 def build_system_prompt() -> str:
@@ -35,7 +38,7 @@ def build_user_message(query: str, context: str) -> str:
 
 def call_llm(system_prompt: str, user_message: str) -> str:
     payload = json.dumps({
-        "model": "mock",
+        "model": LLM_MODEL,
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message}
@@ -45,7 +48,10 @@ def call_llm(system_prompt: str, user_message: str) -> str:
     req = urllib.request.Request(
         LLM_URL,
         data=payload,
-        headers={"Content-Type": "application/json"}
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {LLM_API_KEY}"
+        }
     )
     with urllib.request.urlopen(req) as resp:
         data = json.loads(resp.read().decode('utf-8'))
