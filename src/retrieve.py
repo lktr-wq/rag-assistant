@@ -5,4 +5,4 @@ def parse_faq(filepath: str) -> list[dict]:
 
 def retrieve(query: str, chunks: list, top_k: int = 3) -> list[dict]:
     """检索与 query 最相关的 chunks。"""
-    raise NotImplementedError
+    return []
