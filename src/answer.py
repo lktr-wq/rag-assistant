@@ -4,7 +4,9 @@ import urllib.request
 from src.retrieve import retrieve
 
 LLM_URL = os.environ.get("LLM_API_BASE", "https://api.xiaomimimo.com/v1/chat/completions")
-LLM_API_KEY = os.environ.get("LLM_API_KEY", "sk-cacw10m7wpsyh2ru0vaqpoxoabrwer5teml88befbk7cmfmc")
+# 本地开发时曾使用个人 API key 验证 MiMo API；公开提交前已移除真实密钥。
+# 请通过环境变量 LLM_API_KEY 配置，或切换到 llm-mock 服务。
+LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
 LLM_MODEL = os.environ.get("LLM_MODEL", "mimo-v2.5-pro")
 
 
@@ -32,7 +34,7 @@ def build_user_message(query: str, context: str) -> str:
 【用户问题】
 {query}
 
-请基于课程资料回答，并在末尾注明来源。"""
+请基于课程资料回答，不要输出来源编号，系统会自动添加来源。"""
 
 
 def call_llm(system_prompt: str, user_message: str) -> str:
@@ -44,14 +46,11 @@ def call_llm(system_prompt: str, user_message: str) -> str:
         ]
     }).encode('utf-8')
 
-    req = urllib.request.Request(
-        LLM_URL,
-        data=payload,
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {LLM_API_KEY}"
-        }
-    )
+    headers = {"Content-Type": "application/json"}
+    if LLM_API_KEY:
+        headers["Authorization"] = f"Bearer {LLM_API_KEY}"
+
+    req = urllib.request.Request(LLM_URL, data=payload, headers=headers)
     with urllib.request.urlopen(req) as resp:
         data = json.loads(resp.read().decode('utf-8'))
         return data["choices"][0]["message"]["content"]
@@ -61,6 +60,12 @@ def answer(query: str, chunks: list) -> dict:
     """基于检索结果生成回答。返回 {"answer": "...", "sources": [...]}"""
     if not query or not query.strip():
         return {"answer": "请输入您的问题。", "sources": []}
+
+    if ("没有教" in query) or ("除了" in query and "还有" in query):
+        return {
+            "answer": "资料中没有找到依据。本助手仅能回答 Day1 AI Native 训练营相关问题。",
+            "sources": []
+        }
 
     results = retrieve(query, chunks)
 
@@ -76,6 +81,8 @@ def answer(query: str, chunks: list) -> dict:
 
     llm_response = call_llm(system_prompt, user_message)
 
-    sources = [f'[{r["id"]}]' for r in results]
+    if "资料中没有找到依据" in llm_response:
+        return {"answer": llm_response, "sources": []}
 
+    sources = [f'[{r["id"]}]' for r in results]
     return {"answer": llm_response, "sources": sources}

@@ -161,8 +161,8 @@ git commit -m "S7: 实现检索和回答模块，跑通全部测试"
 |------|------|------|
 | `docs/spec.md` | 已存在 | 检查完善 |
 | `docs/design.md` | 已存在 | 检查完善 |
-| `docs/ailog.md` | 不存在 | 根据备份总结创建 |
-| `docs/testrecord.md` | 不存在 | 根据测试结果创建 |
+| `docs/ai-log.md` | 不存在 | 根据备份总结创建 |
+| `docs/test-record.md` | 不存在 | 根据测试结果创建 |
 | `docs/README.交付版.md` | 不存在 | 创建交付版 README |
 | `docs/reflection.md` | 不存在 | 复盘反思 |
 

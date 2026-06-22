@@ -18,8 +18,8 @@ rag-assistant/
 ├── docs/
 │   ├── spec.md              # 规格说明
 │   ├── design.md            # 设计文档
-│   ├── ailog.md             # AI 协作日志
-│   ├── testrecord.md        # 测试记录
+│   ├── ai-log.md            # AI 协作日志
+│   ├── test-record.md       # 测试记录
 │   ├── README.交付版.md      # 本文件
 │   └── reflection.md        # 复盘反思
 ├── tests/
@@ -47,6 +47,8 @@ export LLM_API_BASE=https://api.xiaomimimo.com/v1/chat/completions
 export LLM_API_KEY=your-api-key
 export LLM_MODEL=mimo-v2.5-pro
 ```
+
+> 安全说明：本地开发验证时曾使用个人 MiMo API key 跑通真实接口；公开提交前已移除真实密钥。复现时请自行通过 `LLM_API_KEY` 环境变量配置，或使用 `llm-mock` 服务。
 
 ## 运行命令
 
@@ -83,12 +85,18 @@ python src/main.py "奖学金政策"                # 资料外拒答
 python src/main.py                           # 空输入
 ```
 
+Windows PowerShell 如遇中文或 ✅ 输出编码错误，请先设置：
+
+```powershell
+$env:PYTHONIOENCODING="utf-8"
+```
+
 ## 核心功能
 
 1. **检索**：基于关键词 TF 匹配 + 标题加权
 2. **回答**：调用 MiMo-V2.5-Pro API 生成回答
-3. **来源引用**：回答末尾注明来源 [faq-XX]
-4. **资料外拒答**：问题与资料无关时拒绝回答
+3. **来源引用**：课程相关回答末尾注明来源 [faq-XX]
+4. **资料外拒答**：问题与资料无关时拒绝回答，且不显示来源编号
 
 ## 依赖
 
@@ -108,7 +116,7 @@ python src/main.py                           # 空输入
 |------|------|
 | `docs/spec.md` | 规格说明（目标/非目标/验收标准） |
 | `docs/design.md` | 设计文档（数据流/检索策略/Prompt 模板） |
-| `docs/ailog.md` | AI 协作日志（目的/输入/建议/判断/验证） |
-| `docs/testrecord.md` | 测试记录（基础测试/功能测试/Mock 验证/API 验证） |
+| `docs/ai-log.md` | AI 协作日志（目的/输入/建议/判断/验证） |
+| `docs/test-record.md` | 测试记录（基础测试/功能测试/Mock 验证/API 验证） |
 | `docs/README.交付版.md` | 交付版 README（本文件） |
 | `docs/reflection.md` | 复盘反思 |

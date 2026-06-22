@@ -28,9 +28,12 @@ def main():
     result = answer(query, chunks)
 
     answer_text, sources = extract_and_remove_sources(result['answer'])
+    refused = "资料中没有找到依据" in answer_text
     print(f"\n{answer_text}")
 
-    if not sources:
+    if refused:
+        sources = []
+    elif not sources:
         sources = result['sources']
     if sources:
         print(f"\n来源: {', '.join(sources)}")

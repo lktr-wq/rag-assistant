@@ -69,16 +69,16 @@ $env:PYTHONIOENCODING="utf-8"; python tests/test_basic.py
 
 **输入**：`python src/main.py "奖学金政策"`
 
-**期望**：返回"资料中没有找到依据"
+**期望**：返回"资料中没有找到依据"，且不显示任何 `[faq-XX]` 来源
 
 **实际输出**：
 ```
 资料中没有找到依据。
-
-来源: [faq-02]
 ```
 
-**结果**：✅ 通过（拒答成功）
+**结果**：✅ 通过
+
+**说明**：早期版本曾出现"拒答成功但仍打印来源 [faq-02]"的问题。原因是检索层误召回后，主程序仍使用检索结果附加来源。修复后，拒答结果不再附加来源。
 
 ---
 
@@ -86,16 +86,14 @@ $env:PYTHONIOENCODING="utf-8"; python tests/test_basic.py
 
 **输入**：`python src/main.py "RAG除了关键词还有什么检索方式？"`
 
-**期望**：拒答或正确处理
+**期望**：拒答或正确处理，且拒答时不显示来源编号
 
 **实际输出**：
 ```
 资料中没有找到依据。
-
-来源: [faq-05]
 ```
 
-**结果**：✅ 通过（拒答成功）
+**结果**：✅ 通过（拒答成功，未显示来源）
 
 ---
 
@@ -148,7 +146,7 @@ python -c "import urllib.request, json; req = urllib.request.Request('http://loc
 **配置**：
 - API Base：`https://api.xiaomimimo.com/v1/chat/completions`
 - Model：`mimo-v2.5-pro`
-- API Key：已配置
+- API Key：本地测试时通过环境变量配置；公开提交版本已移除真实密钥
 
 **测试课程相关问题**：
 ```bash
